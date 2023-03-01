@@ -18,7 +18,7 @@ ingress:
 observability: helm-deps setup-local-names
 	kubectl apply -f monitoring/namespace.yaml
 	
-	helm install kind-prometheus --values monitoring/prometheus-stack-values.yaml \
+	helm upgrade kind-prometheus --install --values monitoring/prometheus-stack-values.yaml \
 		prometheus-community/kube-prometheus-stack \
 		--namespace monitoring --set prometheus.service.nodePort=30000 \
 		--set prometheus.service.type=NodePort \
@@ -28,9 +28,9 @@ observability: helm-deps setup-local-names
 		--set alertmanager.service.type=NodePort --set prometheus-node-exporter.service.nodePort=32001 \
 		--set prometheus-node-exporter.service.type=NodePort 
 
-	helm install loki-distributed grafana/loki-distributed  --namespace monitoring
+	helm upgrade loki-distributed grafana/loki-distributed  --namespace monitoring --install
 	
-	helm install promtail -f monitoring/promtail.yaml grafana/promtail --set "loki.serviceName=loki-distributed-gateway" --namespace monitoring 
+	helm upgrade promtail -f monitoring/promtail.yaml grafana/promtail --install --set "loki.serviceName=loki-distributed-gateway" --namespace monitoring 
 	
 	kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
 	
